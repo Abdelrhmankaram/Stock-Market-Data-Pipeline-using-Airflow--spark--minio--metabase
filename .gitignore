@@ -17,6 +17,4 @@ airflow.db
 **/.astro/dbt_metadata.json
 **/.astro/manifest.slim.json
 
-include\data\minio\
-include/data/minio/.minio.sys/buckets/.bloomcycle.bin/xl.meta
-include/data/minio/.minio.sys/buckets/.usage.json/xl.meta
+include/data/minio/.minio.sys/
