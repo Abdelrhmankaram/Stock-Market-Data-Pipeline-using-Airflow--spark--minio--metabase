@@ -18,3 +18,4 @@ airflow.db
 **/.astro/manifest.slim.json
 
 include/data/minio/.minio.sys/
+./.astro
