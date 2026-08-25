@@ -3,7 +3,7 @@ from airflow.hooks.base import BaseHook
 from airflow.sdk.bases.sensor import PokeReturnValue
 from airflow.providers.standard.operators.python import PythonOperator
 from datetime import datetime
-from include.stock_market.tasks import _get_stock_prices
+from include.stock_market.tasks import _get_stock_prices, _store_prices
 
 SYMBOL = 'NVDA'
 
@@ -29,17 +29,20 @@ def stock_market():
         response=requests.get(url, headers=api.extra_dejson['headers'])
         condition = response.json()["finance"]["result"] is None
 
-        return PokeReturnValue(is_done=condition, xcom_value=response.json())
+        return PokeReturnValue(is_done=condition, xcom_value=url)
 
     get_stock_prices = PythonOperator(
         task_id='get_stock_prices',
         python_callable=_get_stock_prices,
-        op_kwargs={
-            'url': '{{ ti.xcom_pull(tasks_ids="is_api_available) }}',
-            'symbol': SYMBOL
-            }
+        op_kwargs={'url': '{{ ti.xcom_pull(task_ids="is_api_available") }}', 'symbol': SYMBOL}
     )
 
-    is_api_available() >> get_stock_prices
+    store_prices = PythonOperator(
+        task_id='store_prices',
+        python_callable=_store_prices,
+        op_kwargs={'stock': '{{ ti.xcom_pull(task_ids="get_stock_prices") }}'}
+    )
+
+    is_api_available() >> get_stock_prices >> store_prices
 
 stock_market()
