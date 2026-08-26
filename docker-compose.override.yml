@@ -1,7 +1,5 @@
-version: "3.1"
 services:
-
-  api-server:
+  webserver:
     networks:
       - ndsnet
 
@@ -21,8 +19,8 @@ services:
     volumes:
       - ./include/data/minio:/data
     ports:
-      - 9000:9000
-      - 9001:9001
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
@@ -34,7 +32,7 @@ services:
       retries: 3
     networks:
       - ndsnet
-  
+
   spark-master:
     image: airflow/spark-master
     build: ./spark/master
@@ -56,7 +54,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - "SPARK_MASTER=spark://spark-master:7077"
+      - SPARK_MASTER=spark://spark-master:7077
     networks:
       - ndsnet
 
@@ -64,7 +62,7 @@ services:
     image: metabase/metabase:v0.52.8.4
     restart: always
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./include/data/metabase:/metabase-data
     networks:
